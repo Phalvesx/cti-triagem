@@ -1,0 +1,35 @@
+services:
+  cti-api:
+    build: .
+    image: meli-cti-triage:latest
+    container_name: meli-cti-triage
+    ports:
+      - "127.0.0.1:8000:8000"   # só a própria máquina; para expor, use um proxy HTTPS e defina API_TOKEN
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_PATH: /data/cti.db
+    volumes:
+      - cti-data:/data
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  # Executa a suíte de testes dentro de um container: docker compose run --rm tests
+  tests:
+    profiles: ["test"]
+    image: python:3.12-slim
+    working_dir: /src
+    volumes:
+      - ./:/src:ro
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    command: >
+      sh -c "pip install -q -r requirements-dev.txt && python -m pytest -q -p no:cacheprovider"
+
+volumes:
+  cti-data:

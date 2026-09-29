@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CTI Triage · Malware Analysis</title>
+<style>
+  :root {
+    --yellow: #FFE600; --navy: #2D3277; --navy-2: #1F2461; --blue: #3483FA;
+    --ink: #101828; --text: #344054; --muted: #667085; --line: #EAECF0; --bg: #F4F5F7; --card: #fff;
+    --red: #D92D20; --amber: #DC6803; --green: #039855; --gray: #667085;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--text); background: var(--bg); }
+  button, input { font: inherit; }
+  .topbar { background: var(--yellow); box-shadow: 0 1px 0 rgba(0,0,0,.08); }
+  .topbar .in { max-width: 1200px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--navy); font-weight: 800; font-size: 17px; letter-spacing: -.01em; }
+  .brand img { height: 34px; max-width: 170px; object-fit: contain; }
+  .brand svg { width: 32px; height: 32px; }
+  .brand small { display: block; font-weight: 500; font-size: 11.5px; color: var(--navy); opacity: .75; letter-spacing: 0; }
+  .status { display: flex; gap: 6px; flex-wrap: wrap; }
+  .st { background: rgba(45,50,119,.1); color: var(--navy); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+  .st i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 6px; vertical-align: 1px; }
+  .st.off i { background: var(--red); } .st.mock i { background: var(--amber); }
+  main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 48px; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; }
+  @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+  .pad { padding: 18px 20px; }
+  .search h1 { margin: 0 0 4px; font-size: 20px; color: var(--ink); letter-spacing: -.01em; }
+  .search p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .field { flex: 1 1 360px; position: relative; }
+  .field input { width: 100%; padding: 12px 110px 12px 14px; border: 1.5px solid #D0D5DD; border-radius: 10px; font-family: var(--mono); font-size: 13px; color: var(--ink); background: #fff; }
+  .field input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(52,131,250,.15); }
+  .kind { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--navy); background: #EEF0FF; padding: 3px 8px; border-radius: 6px; }
+  .btn { border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 700; cursor: pointer; background: var(--navy); color: #fff; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+  .btn:hover { background: var(--navy-2); } .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.ghost { background: #fff; color: var(--navy); border: 1px solid #D0D5DD; } .btn.ghost:hover { background: #F9FAFB; }
+  .btn.sm { padding: 7px 12px; font-size: 13px; border-radius: 8px; }
+  .btn svg { width: 16px; height: 16px; }
+  @media (max-width: 560px) { form.row .btn { flex: 1 1 100%; justify-content: center; } }
+  .opts { margin-top: 10px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+  .ex { background: #F2F4F7; border: 0; border-radius: 999px; padding: 3px 10px; cursor: pointer; font-size: 12px; color: var(--text); }
+  .ex:hover { background: #E4E7EC; }
+  .result { margin-top: 20px; display: none; } .result.show { display: block; }
+  .verdict { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; }
+  .fam { font-size: 30px; font-weight: 800; color: var(--ink); letter-spacing: -.02em; line-height: 1.1; margin: 2px 0 6px; }
+  .pill { display: inline-block; color: #fff; font-weight: 700; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: .06em; }
+  .hash { font-family: var(--mono); font-size: 12px; color: var(--muted); word-break: break-all; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag { font-size: 11.5px; padding: 2px 8px; border-radius: 6px; background: #F2F4F7; color: var(--text); font-weight: 600; }
+  .tag.warn { background: #FFFAEB; color: #93370D; } .tag.err { background: #FEF3F2; color: #B42318; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .kpis { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-top: 16px; }
+  @media (max-width: 700px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  .kpi { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .kpi .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+  .kpi .v { font-size: 19px; font-weight: 800; color: var(--ink); margin-top: 2px; overflow-wrap: anywhere; }
+  .bar { height: 6px; background: var(--line); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--navy); border-radius: 4px; transition: width .6s ease; }
+  .summary { margin: 16px 0 0; padding: 12px 14px; background: #F9FAFB; border-left: 4px solid var(--yellow); border-radius: 0 8px 8px 0; color: var(--text); }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); padding: 0 12px; overflow-x: auto; }
+  .tab { border: 0; background: none; padding: 12px 12px 10px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+  .tab.on { color: var(--navy); border-color: var(--yellow); }
+  .panel { display: none; padding: 16px 20px; } .panel.on { display: block; }
+  .grid2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+  .grid-inc { display: grid; grid-template-columns: minmax(0,1.7fr) minmax(0,1fr); gap: 24px; } @media (max-width: 900px) { .grid-inc { grid-template-columns: 1fr; } } @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--navy); margin: 0 0 8px; }
+  ul.clean { margin: 0; padding-left: 18px; } ul.clean li { margin: 3px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); background: #F9FAFB; }
+  td { padding: 8px; border-bottom: 1px solid #F2F4F7; vertical-align: top; }
+  td.mono, code { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+  pre.json { margin: 0; white-space: pre-wrap; word-break: break-word; font: 12px/1.55 var(--mono); background: #0B1020; color: #E4E7EC; padding: 14px; border-radius: 10px; max-height: 560px; overflow: auto; }
+  .k { color: #93C5FD } .s { color: #86EFAC } .n { color: #FCA5A5 } .b { color: #FCD34D } .z { color: #98A2B3 }
+  iframe { width: 100%; height: 78vh; border: 1px solid var(--line); border-radius: 10px; background: #EEF0F4; }
+  .side h2 { font-size: 14px; margin: 0; color: var(--ink); }
+  .side .head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .hist { list-style: none; margin: 0; padding: 6px; max-height: 70vh; overflow: auto; }
+  .hist li { padding: 10px; border-radius: 8px; cursor: pointer; display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; }
+  .hist li:hover { background: #F9FAFB; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .hist b { color: var(--ink); font-size: 13.5px; } .hist .h { font-family: var(--mono); font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hist .c { font-size: 12px; font-weight: 700; color: var(--navy); }
+  .empty { color: var(--muted); padding: 16px; font-size: 13px; }
+  .loading { display: none; align-items: center; gap: 10px; color: var(--muted); margin-top: 14px; font-size: 13px; }
+  .loading.show { display: flex; }
+  .spin { width: 18px; height: 18px; border: 3px solid var(--line); border-top-color: var(--navy); border-radius: 50%; animation: s .8s linear infinite; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  .error { margin-top: 14px; padding: 10px 12px; border-radius: 8px; background: #FEF3F2; color: #B42318; font-size: 13px; display: none; }
+  .error.show { display: block; }
+  .rep { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  @media (max-width: 700px) { .rep { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  .nav { display: flex; gap: 4px; background: rgba(45,50,119,.08); padding: 4px; border-radius: 10px; }
+  .nav button { border: 0; background: none; padding: 7px 14px; border-radius: 8px; font-weight: 700; color: var(--navy); cursor: pointer; }
+  .nav button.on { background: var(--navy); color: #fff; }
+  .view { display: none; } .view.on { display: grid; }
+  select, textarea, .inp { font: inherit; padding: 8px 10px; border: 1.5px solid #D0D5DD; border-radius: 8px; background: #fff; color: var(--ink); }
+  textarea { width: 100%; min-height: 64px; resize: vertical; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .hunt { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .hunt .hh { padding: 12px 14px; background: #F9FAFB; border-bottom: 1px solid var(--line); }
+  .hunt .hh b { color: var(--ink); } .hunt .hb { padding: 12px 14px; }
+  .qwrap { position: relative; margin-top: 10px; }
+  .qwrap .lbl { font-size: 11px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+  .qwrap button { position: absolute; right: 8px; top: 24px; }
+  .qwrap pre { padding-right: 96px; }
+  .note { font-size: 12.5px; color: var(--muted); }
+  .chip { display: inline-block; background: #EEF0FF; color: var(--navy); font-size: 11.5px; padding: 1px 8px; border-radius: 999px; font-weight: 600; margin: 1px 2px 1px 0; }
+  .method { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 800px) { .method { grid-template-columns: 1fr; } }
+  .method div { border: 1px dashed #D0D5DD; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; }
+  .method b { display: block; color: var(--navy); }
+  .inc-layout { grid-template-columns: 340px minmax(0,1fr); }
+  @media (max-width: 960px) { .inc-layout { grid-template-columns: 1fr; } }
+  .inc-item { padding: 12px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
+  .inc-item:hover, .inc-item.on { background: #F9FAFB; border-color: var(--line); }
+  .sev { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; color: #fff; }
+  .phase { margin-top: 16px; } .phase h3 { display: flex; justify-content: space-between; }
+  .task { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 10px; padding: 8px 0; border-bottom: 1px solid #F2F4F7; align-items: start; }
+  @media (max-width: 600px) { .task { grid-template-columns: 1fr; } }
+  .task.done .tt { text-decoration: line-through; color: var(--muted); }
+  .tt { font-weight: 600; color: var(--ink); } .td { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline li { overflow-wrap: anywhere; padding: 6px 0 6px 14px; border-left: 2px solid var(--yellow); margin-left: 4px; font-size: 13px; }
+  .timeline small { color: var(--muted); display: block; }
+  .matrix { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+  .mcol h4 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #fff; background: var(--navy); padding: 6px 8px; border-radius: 6px; }
+  .mcell { font-size: 12px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--line); }
+  .mcell b { display: block; font-size: 11.5px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 24px; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="brand" id="brand">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 35 9v10c0 9.5-6.4 16.2-15 18-8.6-1.8-15-8.5-15-18V9z" fill="#2D3277"/><path d="M9 21h6l2.5-5 4 10 2.5-5H31" fill="none" stroke="#FFE600" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><span id="brandName">CTI · Threat Intelligence</span><small>Malware Triage · VirusTotal + MalwareBazaar + GenAI</small></div>
+  </div>
+  <nav class="nav" id="nav">
+    <button class="on" data-view="analise">Análise</button>
+    <button data-view="incidentes">Incidentes</button>
+    <button data-view="heatmap">ATT&amp;CK</button>
+  </nav>
+  <div class="status" id="status"><span class="st mock"><i></i>conectando…</span></div>
+</div></header>
+
+<main class="view on" id="view-analise">
+  <section>
+    <div class="card pad search">
+      <h1>Analisar artefato ou indicador</h1>
+      <p>Informe um hash (MD5, SHA-1, SHA-256) para triagem com IA, ou um IP, domínio ou URL para reputação e correlação com scans anteriores. A ferramenta nunca acessa o indicador: só consulta o VirusTotal/MalwareBazaar.</p>
+      <form id="form" class="row">
+        <div class="field">
+          <input id="q" autocomplete="off" spellcheck="false" aria-label="Hash, IP ou domínio"
+                 value="7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e" />
+          <span class="kind" id="kind">hash</span>
+        </div>
+        <button class="btn" type="submit" id="go">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Analisar
+        </button>
+      </form>
+      <div class="opts">
+        <label><input type="checkbox" id="force" /> forçar reanálise (ignorar cache)</label>
+        <span>Exemplos:</span>
+        <button class="ex" data-q="7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e">hash Phexia</button>
+        <button class="ex" data-q="nfs8u9aw[.]shop">nfs8u9aw[.]shop</button>
+        <button class="ex" data-q="kys[.]li">kys[.]li</button>
+        <button class="ex" data-q="hxxps://t[.]me/phefuckxiabot">URL do DDR</button>
+      </div>
+      <div class="opts">
+        <label class="btn ghost sm" for="localFile" style="cursor:pointer">Calcular hash de um arquivo (local)</label>
+        <input type="file" id="localFile" hidden />
+        <span class="note" id="localNote">O hash é calculado no seu navegador: o arquivo não é enviado a lugar nenhum nem executado.</span>
+      </div>
+      <div class="loading" id="loading"><div class="spin"></div><span id="loadingText">Consultando fontes e executando o agente de IA…</span></div>
+      <div class="error" id="error"></div>
+    </div>
+
+    <!-- Resultado de hash -->
+    <div class="result" id="hashResult">
+      <div class="card pad">
+        <div class="verdict">
+          <div>
+            <div class="eyebrow">Família atribuída</div>
+            <div class="fam" id="fam">—</div>
+            <span class="pill" id="pill">—</span>
+            <div class="hash" id="hashTxt" style="margin-top:8px"></div>
+            <div class="tags" id="tags"></div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost sm" id="btnView">Ver relatório</button>
+            <button class="btn ghost sm" id="btnIncident">Abrir incidente</button>
+            <a class="btn sm" id="btnPdf" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg>Exportar PDF
+            </a>
+          </div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <p class="summary" id="summary"></p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="tabs" role="tablist">
+          <button class="tab on" data-tab="det">Detalhes</button>
+          <button class="tab" data-tab="hunt">Hunting</button>
+          <button class="tab" data-tab="dfir">DFIR</button>
+          <button class="tab" data-tab="mitre">MITRE ATT&amp;CK</button>
+          <button class="tab" data-tab="json">JSON</button>
+          <button class="tab" data-tab="rep">Relatório HTML</button>
+        </div>
+        <div class="panel on" id="p-det"></div>
+        <div class="panel" id="p-hunt">
+          <div class="toolbar">
+            <label class="note">SIEM
+              <select id="siem">
+                <option value="all">Todos</option><option value="splunk">Splunk (SPL)</option>
+                <option value="sentinel">Microsoft Sentinel / Defender (KQL)</option><option value="elastic">Elastic (KQL/EQL)</option>
+                <option value="qradar">IBM QRadar (AQL)</option><option value="secops">Google SecOps (YARA-L)</option>
+                <option value="wazuh">Wazuh (XML)</option><option value="sigma">Sigma</option>
+              </select></label>
+            <a class="btn ghost sm" id="huntMd" href="#">Baixar .md</a>
+            <a class="btn ghost sm" id="huntPdf" href="#">PDF com consultas</a>
+          </div>
+          <div id="huntBody"></div>
+        </div>
+        <div class="panel" id="p-dfir">
+          <div class="toolbar">
+            <label class="note">Sistema do host
+              <select id="dfirOs"><option value="macos">macOS</option><option value="windows">Windows</option><option value="linux">Linux</option></select></label>
+            <a class="btn sm" id="dfirDl" href="#">Baixar script de triagem</a>
+            <span class="note" id="dfirRun"></span>
+          </div>
+          <div id="dfirBody"></div>
+        </div>
+        <div class="panel" id="p-mitre">
+          <div class="toolbar">
+            <a class="btn sm" id="navJson" href="#">Exportar layer (Navigator)</a>
+            <a class="btn ghost sm" id="navCsv" href="#">Exportar CSV</a>
+            <a class="btn ghost sm" href="https://mitre-attack.github.io/attack-navigator/" target="_blank" rel="noopener">Abrir ATT&amp;CK Navigator ↗</a>
+          </div>
+          <div id="mitreBody"></div>
+          <h3 style="margin-top:18px">Importar técnicas</h3>
+          <p class="note">Aceita um layer exportado/editado no ATT&amp;CK Navigator (.json) ou um CSV com a coluna <code>technique_id</code> (opcionais: <code>technique_name</code>, <code>tactic</code>).</p>
+          <div class="toolbar">
+            <input type="file" id="impFile" accept=".json,.csv,application/json,text/csv" class="inp" />
+            <select id="impMode"><option value="merge">Somar às atuais</option><option value="replace">Substituir as atuais</option></select>
+            <button class="btn sm" id="impBtn">Importar</button>
+            <span class="note" id="impMsg"></span>
+          </div>
+        </div>
+        <div class="panel" id="p-json"><div class="actions" style="justify-content:flex-end;margin-bottom:8px"><button class="btn ghost sm" id="btnCopy">Copiar JSON</button></div><pre class="json" id="out"></pre></div>
+        <div class="panel" id="p-rep"><iframe id="frame" title="Relatório de triagem"></iframe></div>
+      </div>
+    </div>
+
+    <!-- Resultado de IP/domínio -->
+    <div class="result" id="iocResult">
+      <div class="card pad">
+        <div class="eyebrow" id="iocType">Domínio</div>
+        <div class="fam" id="iocValue" style="font-family:var(--mono);font-size:22px">—</div>
+        <div class="rep" id="iocKpis" style="margin-top:12px"></div>
+        <h3 style="margin-top:18px">Scans locais que citam este indicador</h3>
+        <div id="iocScans"></div>
+        <h3 style="margin-top:18px">JSON</h3>
+        <pre class="json" id="iocJson"></pre>
+      </div>
+    </div>
+  </section>
+
+  <aside class="card side">
+    <div class="head"><h2>Histórico de scans</h2><button class="btn ghost sm" id="btnHist">Atualizar</button></div>
+    <ul class="hist" id="history"><li class="empty">Carregando…</li></ul>
+  </aside>
+</main>
+<main class="view inc-layout" id="view-incidentes" style="max-width:1200px;margin:0 auto;padding:20px 16px 48px;gap:20px">
+  <aside class="card" style="height:fit-content">
+    <div class="head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)">
+      <h2 style="font-size:14px;margin:0;color:var(--ink)">Incidentes</h2>
+      <select id="incFilter"><option value="">Todos</option><option>aberto</option><option>em_analise</option><option>contido</option><option>erradicado</option><option>recuperado</option><option>encerrado</option></select>
+    </div>
+    <div id="incList" style="padding:6px"></div>
+  </aside>
+  <section class="card pad" id="incDetail"><p class="empty">Selecione um incidente, ou abra um novo a partir de um scan (botão “Abrir incidente”).</p></section>
+</main>
+
+<main class="view" id="view-heatmap" style="max-width:1200px;margin:0 auto;padding:20px 16px 48px;grid-template-columns:minmax(0,1fr)">
+  <section class="card pad">
+    <div class="verdict">
+      <div><div class="eyebrow">Heatmap MITRE ATT&amp;CK</div><div class="fam" style="font-size:22px">Técnicas observadas em todos os scans</div>
+        <p class="note" id="hmInfo"></p></div>
+      <div class="actions">
+        <a class="btn sm" id="hmNav" href="/api/v1/attack/heatmap?format=navigator">Exportar layer (Navigator)</a>
+        <a class="btn ghost sm" id="hmCsv" href="/api/v1/attack/heatmap?format=csv">Exportar CSV</a>
+      </div>
+    </div>
+    <div class="matrix" id="matrix" style="margin-top:16px"></div>
+  </section>
+</main>
+
+<footer>API docs em <a href="/docs">/docs</a> · Resultados persistidos em SQLite</footer>
+
+<script>
+const API = location.origin.startsWith("http") ? location.origin : "http://localhost:8000";
+const HASH_RE = /^([a-f0-9]{32}|[a-f0-9]{40}|[a-f0-9]{64})$/i;
+const V = { malicious: ["#D92D20", "Malicioso"], suspicious: ["#DC6803", "Suspeito"], benign: ["#039855", "Benigno"], unknown: ["#667085", "Indeterminado"] };
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const defang = (s) => String(s).replace(/http/g, "hxxp").replace(/\./g, "[.]");
+let last = null;
+
+function highlight(obj) {
+  return esc(JSON.stringify(obj, null, 2)).replace(/(&quot;(?:\\.|[^\\])*?&quot;)(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d+)?/g,
+    (m, str, colon, bool) => str ? (colon ? `<span class="k">${str}</span>${colon}` : `<span class="s">${str}</span>`)
+      : bool ? `<span class="b">${m}</span>` : m === "null" ? `<span class="z">${m}</span>` : `<span class="n">${m}</span>`);
+}
+// ---------------- Token de acesso (opcional: só se API_TOKEN estiver definido no servidor)
+const TOKEN_KEY = "cti_token";
+const tok = () => { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } };
+const hdr = (extra = {}) => tok() ? { ...extra, "x-api-key": tok() } : extra;
+const withTok = (url) => tok() ? url + (url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(tok()) : url;
+async function authFetch(url, opts = {}) {
+  let res = await fetch(url, { ...opts, headers: hdr(opts.headers || {}) });
+  if (res.status === 401) {
+    const t = window.prompt("Esta instância exige token de acesso (API_TOKEN):");
+    if (t) { try { localStorage.setItem(TOKEN_KEY, t.trim()); } catch {} res = await fetch(url, { ...opts, headers: hdr(opts.headers || {}) }); }
+  }
+  return res;
+}
+const refang = (v) => v.trim().replace(/\[\.\]|\(\.\)/g, ".").replace(/^hxxps?:\/\//i, "").replace(/^https?:\/\//i, "").split("/")[0];
+function detectKind(v) {
+  if (HASH_RE.test(v.trim())) return "hash";
+  if (/^(hxxps?|https?):\/\//i.test(v.trim().replace("[:]", ":"))) return "url";
+  const r = refang(v);
+  return (/^\d{1,3}(\.\d{1,3}){3}$/.test(r) || r.includes(":")) ? "ip" : "domain";
+}
+async function call(path) {
+  const res = await authFetch(API + path);
+  const body = await res.json().catch(() => ({ detail: res.statusText }));
+  if (!res.ok) throw Object.assign(new Error(typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail)), { status: res.status });
+  return body;
+}
+const kpi = (label, value, pct, color) => `<div class="kpi"><div class="l">${label}</div><div class="v">${esc(value)}</div>${pct == null ? "" : `<div class="bar"><span style="width:${pct}%;${color ? "background:" + color : ""}"></span></div>`}</div>`;
+
+function renderHash(d) {
+  const t = d.triage, f = d.features, det = f.detection, mb = f.malwarebazaar || {};
+  const [color, label] = V[t.verdict] || V.unknown;
+  $("fam").textContent = t.malware_family;
+  $("pill").textContent = label; $("pill").style.background = color;
+  $("hashTxt").textContent = d.hash;
+  const tags = [`<span class="tag">${esc(d.source)}</span>`, `<span class="tag">${esc(d.engine)}</span>`];
+  if (d.cached) tags.push('<span class="tag">cache</span>');
+  if (f.simulated) tags.push('<span class="tag warn">dados simulados</span>');
+  Object.entries(d.source_errors || {}).forEach(([k, v]) => tags.push(`<span class="tag err">${esc(k)}: ${esc(v)}</span>`));
+  $("tags").innerHTML = tags.join("");
+  const detPct = det.analysed_engines ? Math.round(100 * det.malicious / det.analysed_engines) : 0;
+  $("kpis").innerHTML = kpi("Confiança", t.confidence + "%", t.confidence) + kpi("Detecções VT", det.ratio, detPct, color)
+    + kpi("MalwareBazaar", mb.found ? (mb.signature || "n/d") : "—") + kpi("Plataforma", t.platform) + kpi("Score", d.heuristic_score + "/100", d.heuristic_score);
+  $("summary").textContent = t.summary;
+  const attack = t.mitre_attack.length ? `<table><thead><tr><th>ID</th><th>Técnica</th><th>Tática</th></tr></thead><tbody>${t.mitre_attack.map(a =>
+    `<tr><td><a href="https://attack.mitre.org/techniques/${esc(a.id.replace(".", "/"))}/" target="_blank" rel="noopener">${esc(a.id)}</a></td><td>${esc(a.name)}</td><td>${esc(a.tactic || "")}</td></tr>`).join("")}</tbody></table>`
+    : '<p class="empty" style="padding:0">Nenhuma técnica mapeada (configure um LLM para mapeamento automático).</p>';
+  const IOC_LABEL = { domains: "Domínio", ips: "IP", urls: "URL", abused_services: "Serviço abusado" };
+  const iocs = ["domains", "ips", "urls", "abused_services"].flatMap(k => (t.iocs[k] || []).map(v =>
+    `<tr><td><span class="chip">${IOC_LABEL[k]}</span></td><td class="mono">${esc(defang(v))}${k === "abused_services"
+      ? ' <span class="note" style="font-family:inherit">— legítimo usado como DDR: bloqueie só a URL/perfil</span>' : ""}</td></tr>`)).join("");
+  $("p-det").innerHTML = `
+    <div class="grid2">
+      <div><h3>Principais achados</h3><ul class="clean">${t.key_findings.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div><h3>Ações recomendadas</h3><ul class="clean">${t.recommended_actions.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+    </div>
+    <h3 style="margin-top:20px">MITRE ATT&CK</h3>${attack}
+    <h3 style="margin-top:20px">IoCs (defanged)</h3>${iocs ? `<table><tbody>${iocs}</tbody></table>` : '<p class="empty" style="padding:0">—</p>'}`;
+  $("out").innerHTML = highlight(d);
+  $("btnPdf").href = withTok(`${API}/api/v1/report/${d.hash}/pdf?fallback=print`);
+  $("frame").removeAttribute("src");
+  $("huntBody").innerHTML = ""; $("mitreBody").innerHTML = ""; $("impMsg").textContent = ""; $("dfirBody").innerHTML = "";
+  $("navJson").href = withTok(`${API}/api/v1/attack/${d.hash}?format=navigator`);
+  $("navCsv").href = withTok(`${API}/api/v1/attack/${d.hash}?format=csv`);
+  $("hashResult").classList.add("show"); $("iocResult").classList.remove("show");
+}
+
+function renderIoc(d) {
+  const s = d.reputation.last_analysis_stats || {};
+  $("iocType").textContent = { ip: "Endereço IP", domain: "Domínio", url: "URL" }[d.type] || d.type;
+  $("iocValue").innerHTML = esc(defang(d.query)) + (d.source === "mock"
+    ? ' <span class="tag warn" style="font-family:inherit;font-size:12px;vertical-align:middle">dados simulados — configure VT_API_KEY</span>' : "");
+  $("iocKpis").innerHTML = kpi("Maliciosos", s.malicious ?? 0) + kpi("Suspeitos", s.suspicious ?? 0) + kpi("Reputação", d.reputation.reputation ?? "—") + kpi("Scans locais", d.related_scans.length);
+  $("iocScans").innerHTML = d.related_scans.length ? `<table><thead><tr><th>Família</th><th>Veredito</th><th>Hash</th></tr></thead><tbody>${d.related_scans.map(r =>
+    `<tr><td><b>${esc(r.malware_family)}</b></td><td>${esc((V[r.verdict] || V.unknown)[1])}</td><td class="mono">${esc(r.hash)}</td></tr>`).join("")}</tbody></table>`
+    : '<p class="empty" style="padding:0">Nenhum scan local cita este indicador.</p>';
+  $("iocJson").innerHTML = highlight(d);
+  $("iocResult").classList.add("show"); $("hashResult").classList.remove("show");
+}
+
+async function run(e) {
+  e?.preventDefault();
+  const v = $("q").value.trim(); if (!v) return;
+  const kind = detectKind(v);
+  $("error").classList.remove("show"); $("loading").classList.add("show"); $("go").disabled = true;
+  $("hashResult").classList.remove("show"); $("iocResult").classList.remove("show");
+  $("loadingText").textContent = kind === "hash" ? "Consultando VirusTotal e MalwareBazaar e executando o agente de IA…" : "Buscando reputação e correlações…";
+  try {
+    if (kind === "hash") { last = await call(`/api/v1/analyze/${v.toLowerCase()}?force=${$("force").checked}`); renderHash(last); loadHistory(); }
+    else { last = await call(`/api/v1/search?q=${encodeURIComponent(v)}`); renderIoc(last); }
+  } catch (err) {
+    $("error").textContent = `Erro ${err.status || ""}: ${err.message}`; $("error").classList.add("show");
+  } finally { $("loading").classList.remove("show"); $("go").disabled = false; }
+}
+
+function tab(name) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab === name));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === "p-" + name));
+  if (name === "rep" && last?.hash && !$("frame").getAttribute("src")) $("frame").src = withTok(`${API}/api/v1/report/${last.hash}?siem=${$("siem").value}`);
+  if (name === "hunt" && last?.hash && !$("huntBody").innerHTML) loadHunts();
+  if (name === "mitre" && last?.hash) renderMitre(last.triage.mitre_attack);
+  if (name === "dfir" && last?.hash && !$("dfirBody").innerHTML) loadDfir(true);
+}
+
+async function loadHistory() {
+  try {
+    const h = await call("/api/v1/history?limit=25");
+    $("history").innerHTML = h.items.map(i => `
+      <li data-hash="${esc(i.hash)}" title="${esc(i.hash)}">
+        <span class="dot" style="background:${(V[i.verdict] || V.unknown)[0]}"></span>
+        <div style="min-width:0"><b>${esc(i.malware_family)}</b><div class="h">${esc(i.hash)}</div>
+          <div class="h" style="font-family:inherit">${new Date(i.created_at).toLocaleString("pt-BR")}</div></div>
+        <span class="c">${i.confidence}%</span>
+      </li>`).join("") || '<li class="empty">Nenhum scan ainda. Analise um hash para começar.</li>';
+    document.querySelectorAll("#history li[data-hash]").forEach(li => li.onclick = () => { $("q").value = li.dataset.hash; $("force").checked = false; $("kind").textContent = "hash"; run(); });
+  } catch { $("history").innerHTML = '<li class="empty">Falha ao carregar histórico.</li>'; }
+}
+
+async function init() {
+  try {
+    const [h, b] = await Promise.all([call("/health"), call("/api/v1/brand")]);
+    const cls = (s) => s === "disabled" ? "off" : (s === "mock" ? "mock" : "");
+    $("status").innerHTML = `<span class="st ${cls(h.vt_source)}"><i></i>VirusTotal: ${esc(h.vt_source)}</span>`
+      + `<span class="st ${cls(h.mb_source)}"><i></i>MalwareBazaar: ${esc(h.mb_source)}</span>`
+      + `<span class="st ${h.engine === "heuristic" ? "mock" : ""}"><i></i>IA: ${esc(h.engine)}</span>`;
+    $("brandName").textContent = b.name;
+    if (b.logo_url) $("brand").querySelector("svg").outerHTML = `<img src="${API + b.logo_url}" alt="${esc(b.name)}">`;
+  } catch { $("status").innerHTML = '<span class="st off"><i></i>API offline</span>'; }
+  loadHistory();
+}
+
+// ---------------- Hunting
+async function loadHunts() {
+  const siem = $("siem").value;
+  $("huntMd").href = withTok(`${API}/api/v1/hunt/${last.hash}?siem=${siem}&format=markdown`);
+  $("huntPdf").href = withTok(`${API}/api/v1/report/${last.hash}/pdf?siem=${siem}&fallback=print`);
+  $("huntBody").innerHTML = '<p class="note">Gerando consultas…</p>';
+  try {
+    const p = await call(`/api/v1/hunt/${last.hash}?siem=${siem}`);
+    const method = `<div class="method">${p.methodology.map(m => `<div><b>${esc(m.step)}</b>${esc(m.detail)}</div>`).join("")}</div>`;
+    $("huntBody").innerHTML = method + p.hunts.map(h => `
+      <div class="hunt">
+        <div class="hh"><b>${esc(h.id)} · ${esc(h.title)}</b> <span class="tag">${esc(h.type)}</span>
+          <div style="margin-top:4px">${h.attack.map(a => `<span class="chip">${esc(a)}</span>`).join("")}</div></div>
+        <div class="hb">
+          <div><b>Hipótese:</b> ${esc(h.hypothesis)}</div>
+          <div class="note"><b>Fontes:</b> ${esc(h.data_sources.join(", "))}</div>
+          <div class="note"><b>Como triar:</b> ${esc(h.triage)}</div>
+          ${Object.entries(h.queries).map(([s, q]) => `
+            <div class="qwrap"><div class="lbl">${esc(p.siems[s] || s)}</div>
+              ${(h.query_notes?.[s] || []).map(n => `<div class="note">↳ ${esc(n)}</div>`).join("")}
+              <pre class="json">${esc(q)}</pre><button class="btn ghost sm cp">Copiar</button></div>`).join("")}
+        </div></div>`).join("");
+    $("huntBody").querySelectorAll(".cp").forEach(b => b.onclick = () => {
+      navigator.clipboard.writeText(b.previousElementSibling.textContent); b.textContent = "Copiado!"; setTimeout(() => b.textContent = "Copiar", 1200);
+    });
+  } catch (err) { $("huntBody").innerHTML = `<p class="error show">${esc(err.message)}</p>`; }
+}
+$("siem").onchange = () => { $("huntBody").innerHTML = ""; loadHunts(); $("frame").removeAttribute("src"); };
+
+// ---------------- DFIR
+async function loadDfir(auto) {
+  const os = auto ? "" : $("dfirOs").value;
+  $("dfirBody").innerHTML = '<p class="note">Montando plano de coleta…</p>';
+  try {
+    const p = await call(`/api/v1/dfir/${last.hash}` + (os ? `?os=${os}` : ""));
+    $("dfirOs").value = p.os;
+    $("dfirDl").href = withTok(`${API}/api/v1/dfir/${last.hash}/script?os=${p.os}`);
+    $("dfirRun").innerHTML = `Rodar no host <b>isolado</b>: <code>${esc(p.how_to_run)}</code>`;
+    $("dfirBody").innerHTML = `
+      <div class="grid2">
+        <div><h3>Forense segura</h3><ul class="clean">${p.safe_rules.map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>
+        <div><h3>Ordem de coleta (RFC 3227)</h3><ul class="clean">${p.order_of_volatility.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+          <p class="note">Padrões: ${esc(p.standards.join(" · "))}${p.recommended_os ? "" : " · SO não detectado na triagem: escolha acima."}</p></div>
+      </div>
+      <h3 style="margin-top:18px">Verificações das técnicas observadas (${esc(p.os)})</h3>
+      ${p.technique_checks.length ? p.technique_checks.map(c => `
+        <div class="qwrap"><div class="lbl">${esc(c.technique)} · ${esc(c.check)}</div>
+          <pre class="json">${esc(c.command)}</pre><button class="btn ghost sm cp">Copiar</button></div>`).join("")
+        : '<p class="note">Nenhuma técnica mapeada com verificação específica; o script ainda faz a varredura completa de IoCs e persistência.</p>'}
+      <p class="note" style="margin-top:12px">O script já executa tudo isto automaticamente, sem rede e sem alterar o host, e gera um pacote com manifesto SHA-256.</p>`;
+    $("dfirBody").querySelectorAll(".cp").forEach(b => b.onclick = () => {
+      navigator.clipboard.writeText(b.previousElementSibling.textContent); b.textContent = "Copiado!"; setTimeout(() => b.textContent = "Copiar", 1200);
+    });
+  } catch (err) { $("dfirBody").innerHTML = `<p class="error show">${esc(err.message)}</p>`; }
+}
+$("dfirOs").onchange = () => loadDfir(false);
+
+// ---------------- MITRE
+function renderMitre(list) {
+  $("mitreBody").innerHTML = list.length ? `<table><thead><tr><th>ID</th><th>Técnica</th><th>Tática</th></tr></thead><tbody>${list.map(a =>
+    `<tr><td><a href="https://attack.mitre.org/techniques/${esc(a.id.replace(".", "/"))}/" target="_blank" rel="noopener"><b>${esc(a.id)}</b></a></td><td>${esc(a.name)}</td><td><span class="chip">${esc(a.tactic || "—")}</span></td></tr>`).join("")}</tbody></table>`
+    : '<p class="note">Nenhuma técnica mapeada. Importe um layer ou CSV abaixo.</p>';
+}
+$("impBtn").onclick = async () => {
+  const f = $("impFile").files[0];
+  if (!f || !last?.hash) { $("impMsg").textContent = "Escolha um arquivo .json ou .csv."; return; }
+  const text = await f.text();
+  const res = await authFetch(`${API}/api/v1/attack/${last.hash}/import?mode=${$("impMode").value}`, {
+    method: "POST", body: text, headers: { "content-type": f.name.toLowerCase().endsWith(".json") ? "application/json" : "text/csv" } });
+  const body = await res.json();
+  if (!res.ok) { $("impMsg").innerHTML = `<span style="color:var(--red)">${esc(body.detail)}</span>`; return; }
+  last.triage.mitre_attack = body.techniques; renderMitre(body.techniques);
+  $("impMsg").innerHTML = `<span style="color:var(--green)">✔ ${body.imported} importada(s); total ${body.total}.</span>`;
+  $("frame").removeAttribute("src");
+};
+
+// ---------------- Navegação
+function show(view) {
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === view));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "view-" + view));
+  if (view === "incidentes") loadIncidents();
+  if (view === "heatmap") loadHeatmap();
+}
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => show(b.dataset.view));
+
+// ---------------- Incidentes
+const SEV = { baixa: "#039855", media: "#DC6803", alta: "#D92D20", critica: "#7A271A" };
+const TST = { pendente: "Pendente", em_andamento: "Em andamento", concluida: "Concluída", nao_aplicavel: "N/A" };
+const IST = ["aberto", "em_analise", "contido", "erradicado", "recuperado", "encerrado"];
+let currentInc = null;
+async function send(method, path, body) {
+  const res = await authFetch(API + path, { method, headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail));
+  return data;
+}
+$("btnIncident").onclick = async () => {
+  try { const inc = await send("POST", "/api/v1/incidents", { hash: last.hash }); show("incidentes"); renderIncident(inc); }
+  catch (err) { $("error").textContent = err.message; $("error").classList.add("show"); }
+};
+async function loadIncidents() {
+  const st = $("incFilter").value;
+  const list = await call("/api/v1/incidents" + (st ? `?status=${st}` : ""));
+  $("incList").innerHTML = list.map(i => `
+    <div class="inc-item ${currentInc?.id === i.id ? "on" : ""}" data-id="${i.id}">
+      <div style="display:flex;justify-content:space-between;gap:8px"><b style="color:var(--ink)">#${i.id} ${esc(i.title)}</b>
+        <span class="sev" style="background:${SEV[i.severity]}">${esc(i.severity)}</span></div>
+      <div class="note">${esc(i.status)} · ${i.tasks_done}/${i.tasks_total} tarefas</div>
+      <div class="bar"><span style="width:${i.tasks_total ? Math.round(100 * i.tasks_done / i.tasks_total) : 0}%"></span></div>
+    </div>`).join("") || '<p class="empty">Nenhum incidente.</p>';
+  $("incList").querySelectorAll(".inc-item").forEach(el => el.onclick = async () => renderIncident(await call(`/api/v1/incidents/${el.dataset.id}`)));
+}
+$("incFilter").onchange = loadIncidents;
+function renderIncident(inc) {
+  currentInc = inc;
+  const base = `/api/v1/incidents/${inc.id}`;
+  const phases = inc.phases.filter(p => p.total).map(p => `
+    <div class="phase"><h3><span>${esc(p.phase)}</span><span class="note">${p.done}/${p.total}</span></h3>
+      ${inc.tasks.filter(t => t.phase === p.phase).map(t => `
+        <div class="task ${["concluida", "nao_aplicavel"].includes(t.status) ? "done" : ""}">
+          <select data-task="${t.id}">${Object.entries(TST).map(([k, v]) => `<option value="${k}" ${t.status === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+          <div><div class="tt">${esc(t.title)}</div><div class="td">${esc(t.detail || "")}</div></div>
+        </div>`).join("")}</div>`).join("");
+  $("incDetail").innerHTML = `
+    <div class="verdict">
+      <div><div class="eyebrow">Incidente #${inc.id} · aberto em ${new Date(inc.created_at).toLocaleString("pt-BR")}</div>
+        <div class="fam" style="font-size:22px">${esc(inc.title)}</div>
+        <span class="sev" style="background:${SEV[inc.severity]}">${esc(inc.severity)}</span>
+        <span class="hash" style="margin-left:6px">${esc(inc.scan_hash || "")}</span></div>
+      <div class="actions">
+        <a class="btn sm" target="_blank" href="${withTok(API + base + "/export?format=pdf&fallback=print")}">PDF</a>
+        <a class="btn ghost sm" href="${withTok(API + base + "/export?format=markdown")}">Markdown</a>
+        <a class="btn ghost sm" href="${withTok(API + base + "/export?format=json")}">JSON</a>
+      </div>
+    </div>
+    <div class="kpis" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <div class="kpi"><div class="l">Progresso</div><div class="v">${inc.progress}%</div><div class="bar"><span style="width:${inc.progress}%"></span></div></div>
+      <div class="kpi"><div class="l">Status</div><select id="incStatus" style="width:100%;margin-top:4px">${IST.map(s => `<option ${s === inc.status ? "selected" : ""}>${s}</option>`).join("")}</select></div>
+      <div class="kpi"><div class="l">Severidade</div><select id="incSev" style="width:100%;margin-top:4px">${Object.keys(SEV).map(s => `<option ${s === inc.severity ? "selected" : ""}>${s}</option>`).join("")}</select></div>
+      <div class="kpi"><div class="l">Responsável</div><input class="inp" id="incOwner" style="width:100%;margin-top:4px" value="${esc(inc.owner || "")}"></div>
+    </div>
+    <div style="margin-top:12px"><div class="l note">Hosts afetados (separados por vírgula)</div>
+      <div class="toolbar"><input class="inp" id="incHosts" style="flex:1" value="${esc(inc.hosts.join(", "))}"><button class="btn sm" id="incSave">Salvar</button></div></div>
+    <div class="grid-inc">
+      <div>${phases}</div>
+      <div><h3 style="margin-top:16px">Linha do tempo</h3>
+        <textarea id="incNote" placeholder="Registrar ação, evidência ou decisão…"></textarea>
+        <div class="toolbar" style="margin-top:6px"><button class="btn sm" id="incAdd">Adicionar</button></div>
+        <ul class="timeline">${inc.events.slice().reverse().map(e => `<li><small>${new Date(e.ts).toLocaleString("pt-BR")} · ${esc(e.author || "")} · ${esc(e.kind)}</small>${esc(e.message)}</li>`).join("")}</ul>
+      </div>
+    </div>`;
+  $("incDetail").querySelectorAll("select[data-task]").forEach(s => s.onchange = async () =>
+    renderIncident(await send("PATCH", `${base}/tasks/${s.dataset.task}`, { status: s.value })));
+  $("incSave").onclick = async () => renderIncident(await send("PATCH", base, {
+    status: $("incStatus").value, severity: $("incSev").value, owner: $("incOwner").value,
+    hosts: $("incHosts").value.split(",").map(x => x.trim()).filter(Boolean) }));
+  $("incAdd").onclick = async () => { if ($("incNote").value.trim()) renderIncident(await send("POST", `${base}/events`, { message: $("incNote").value })); };
+  loadIncidents();
+}
+
+// ---------------- Heatmap
+const TACTICS = ["Reconnaissance", "Resource Development", "Initial Access", "Execution", "Persistence", "Privilege Escalation",
+  "Defense Evasion", "Credential Access", "Discovery", "Lateral Movement", "Collection", "Command and Control", "Exfiltration", "Impact"];
+async function loadHeatmap() {
+  $("hmNav").href = withTok("/api/v1/attack/heatmap?format=navigator");
+  $("hmCsv").href = withTok("/api/v1/attack/heatmap?format=csv");
+  const h = await call("/api/v1/attack/heatmap");
+  const max = Math.max(1, ...h.techniques.map(t => t.scans));
+  $("hmInfo").textContent = `${h.scans} scan(s) · ${h.techniques.length} técnica(s). Cor = frequência.`;
+  const cols = TACTICS.map(tac => [tac, h.techniques.filter(t => (t.tactic || "").toLowerCase() === tac.toLowerCase())])
+    .filter(([, ts]) => ts.length);
+  const other = h.techniques.filter(t => !TACTICS.some(x => x.toLowerCase() === (t.tactic || "").toLowerCase()));
+  if (other.length) cols.push(["Sem tática", other]);
+  const shade = (n) => { const a = 0.18 + 0.82 * (n / max); return `background:rgba(255,230,0,${a.toFixed(2)})`; };
+  $("matrix").innerHTML = cols.map(([tac, ts]) => `<div class="mcol"><h4>${esc(tac)}</h4>${ts.map(t =>
+    `<div class="mcell" style="${shade(t.scans)}" title="${esc(t.families.join(", "))}"><b>${esc(t.id)}</b>${esc(t.name)}<div class="note">${t.scans} scan(s)</div></div>`).join("")}</div>`).join("")
+    || '<p class="empty">Nenhuma técnica ainda. Analise um hash.</p>';
+}
+
+// ---------------- Hash local (forense segura): o arquivo nunca sai do computador
+$("localFile").onchange = async () => {
+  const f = $("localFile").files[0];
+  if (!f) return;
+  if (!window.crypto?.subtle) { $("localNote").textContent = "Seu navegador bloqueou o cálculo (use http://127.0.0.1)."; return; }
+  if (f.size > 1024 ** 3) { $("localNote").textContent = "Arquivo maior que 1 GB: calcule com 'shasum -a 256' no Terminal."; return; }
+  $("localNote").textContent = `Calculando SHA-256 de ${f.name}…`;
+  const digest = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
+  const hex = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+  $("localFile").value = "";
+  $("localNote").textContent = `SHA-256 de ${f.name} calculado localmente — o arquivo não foi enviado nem executado.`;
+  $("q").value = hex; $("kind").textContent = "hash"; run();
+};
+
+$("form").addEventListener("submit", run);
+$("q").addEventListener("input", () => $("kind").textContent = $("q").value.trim() ? detectKind($("q").value) : "");
+document.querySelectorAll(".ex").forEach(b => b.onclick = () => { $("q").value = b.dataset.q; $("kind").textContent = detectKind(b.dataset.q); run(); });
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => tab(t.dataset.tab));
+$("btnView").onclick = () => { tab("rep"); $("p-rep").scrollIntoView({ behavior: "smooth" }); };
+$("btnHist").onclick = loadHistory;
+$("btnCopy").onclick = () => last && navigator.clipboard.writeText(JSON.stringify(last, null, 2));
+init();
+</script>
+</body>
+</html>

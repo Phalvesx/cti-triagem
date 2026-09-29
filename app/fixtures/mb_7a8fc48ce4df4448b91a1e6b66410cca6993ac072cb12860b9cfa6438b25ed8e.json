@@ -1,0 +1,68 @@
+{
+  "_simulated": true,
+  "_note": "Resposta SIMULADA no formato da API do MalwareBazaar (get_info). Use MB_API_KEY para dados reais.",
+  "query_status": "ok",
+  "data": {
+    "sha256_hash": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e",
+    "md5_hash": "(simulado)",
+    "sha1_hash": "(simulado)",
+    "file_name": "gfskjsnghdjsvuxj",
+    "file_size": 18432,
+    "file_type_mime": "text/plain",
+    "file_type": "applescript",
+    "first_seen": "2025-10-28 14:12:03",
+    "last_seen": null,
+    "signature": "Phexia",
+    "reporter": "(simulado)",
+    "origin_country": null,
+    "tags": [
+      "AppleScript",
+      "backdoor",
+      "macOS",
+      "Phexia",
+      "stealer"
+    ],
+    "delivery_method": "web_download",
+    "intelligence": {
+      "clamav": null,
+      "downloads": "42",
+      "uploads": "1",
+      "mail": null
+    },
+    "yara_rules": [
+      {
+        "rule_name": "MAL_macOS_Phexia_Stealer_Backdoor",
+        "author": "(simulado)",
+        "description": "Phexia AppleScript stealer/backdoor",
+        "reference": null
+      }
+    ],
+    "vendor_intel": {
+      "Triage": {
+        "malware_family": "phexia",
+        "score": "10",
+        "tags": [
+          "family:phexia",
+          "macos",
+          "stealer"
+        ]
+      },
+      "ReversingLabs": {
+        "threat_name": "Script-AppleScript.Trojan.Phexia",
+        "status": "MALICIOUS"
+      },
+      "ANY.RUN": [
+        {
+          "malware_family": "Phexia",
+          "verdict": "Malicious activity"
+        }
+      ]
+    },
+    "comments": [
+      {
+        "display_name": "(simulado)",
+        "comment": "DDR via t.me/phefuckxiabot e steamcommunity.com/id/phefuckxia -> nfs8u9aw.shop"
+      }
+    ]
+  }
+}

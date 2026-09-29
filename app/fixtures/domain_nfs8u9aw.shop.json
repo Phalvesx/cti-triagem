@@ -1,0 +1,26 @@
+{
+  "_simulated": true,
+  "data": {
+    "id": "nfs8u9aw.shop",
+    "type": "domain",
+    "attributes": {
+      "last_analysis_stats": {
+        "malicious": 9,
+        "suspicious": 2,
+        "harmless": 0,
+        "undetected": 80
+      },
+      "reputation": -5,
+      "tags": [
+        "c2",
+        "phexia",
+        "dead-drop-resolved"
+      ],
+      "registrar": "(simulado)",
+      "last_dns_records": [],
+      "categories": {
+        "simulated": "malware"
+      }
+    }
+  }
+}

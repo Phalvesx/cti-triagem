@@ -1,0 +1,324 @@
+{
+  "_simulated": true,
+  "_note": "Resposta SIMULADA no formato da API v3 do VirusTotal, construída a partir de OSINT publica (L0Psec, Moonlock, Objective-See, PCrisk). Use VT_API_KEY para dados reais.",
+  "data": {
+    "id": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e",
+    "type": "file",
+    "attributes": {
+      "sha256": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e",
+      "md5": "(simulado)",
+      "sha1": "(simulado)",
+      "type_description": "AppleScript / Shell script",
+      "type_tag": "applescript",
+      "size": 18432,
+      "meaningful_name": "gfskjsnghdjsvuxj",
+      "names": [
+        "gfskjsnghdjsvuxj",
+        "update.scpt"
+      ],
+      "first_submission_date": 1761609600,
+      "last_analysis_date": 1761868800,
+      "times_submitted": 7,
+      "reputation": -12,
+      "tags": [
+        "macos",
+        "applescript",
+        "persistence",
+        "stealer",
+        "ddr"
+      ],
+      "last_analysis_stats": {
+        "malicious": 12,
+        "suspicious": 1,
+        "undetected": 20,
+        "harmless": 0,
+        "timeout": 0,
+        "type-unsupported": 8
+      },
+      "last_analysis_results": {
+        "ESET-NOD32": {
+          "category": "malicious",
+          "engine_name": "ESET-NOD32",
+          "result": "OSX/PSW.Agent.FO trojan",
+          "method": "blacklist"
+        },
+        "Sophos": {
+          "category": "malicious",
+          "engine_name": "Sophos",
+          "result": "OSX/Phebot-A",
+          "method": "blacklist"
+        },
+        "Kaspersky": {
+          "category": "malicious",
+          "engine_name": "Kaspersky",
+          "result": "HEUR:Trojan-Dropper.OSX.Agent.v",
+          "method": "blacklist"
+        },
+        "Avast": {
+          "category": "malicious",
+          "engine_name": "Avast",
+          "result": "MacOS:Agent-BAT [Drp]",
+          "method": "blacklist"
+        },
+        "AVG": {
+          "category": "malicious",
+          "engine_name": "AVG",
+          "result": "MacOS:Agent-BAT [Drp]",
+          "method": "blacklist"
+        },
+        "BitDefender": {
+          "category": "malicious",
+          "engine_name": "BitDefender",
+          "result": "Trojan.MAC.Generic.D1A2B3",
+          "method": "blacklist"
+        },
+        "Emsisoft": {
+          "category": "malicious",
+          "engine_name": "Emsisoft",
+          "result": "Trojan.MAC.Generic.D1A2B3 (B)",
+          "method": "blacklist"
+        },
+        "GData": {
+          "category": "malicious",
+          "engine_name": "GData",
+          "result": "Trojan.MAC.Generic.D1A2B3",
+          "method": "blacklist"
+        },
+        "Microsoft": {
+          "category": "malicious",
+          "engine_name": "Microsoft",
+          "result": "Trojan:MacOS/Multiverze",
+          "method": "blacklist"
+        },
+        "Symantec": {
+          "category": "malicious",
+          "engine_name": "Symantec",
+          "result": "OSX.Trojan.Gen",
+          "method": "blacklist"
+        },
+        "Ikarus": {
+          "category": "malicious",
+          "engine_name": "Ikarus",
+          "result": "Trojan-PSW.OSX.Phexia",
+          "method": "blacklist"
+        },
+        "Elastic": {
+          "category": "malicious",
+          "engine_name": "Elastic",
+          "result": "malicious (high confidence)",
+          "method": "blacklist"
+        },
+        "CrowdStrike": {
+          "category": "undetected",
+          "engine_name": "CrowdStrike",
+          "result": null,
+          "method": "blacklist"
+        },
+        "SentinelOne": {
+          "category": "undetected",
+          "engine_name": "SentinelOne",
+          "result": null,
+          "method": "blacklist"
+        },
+        "TrendMicro": {
+          "category": "undetected",
+          "engine_name": "TrendMicro",
+          "result": null,
+          "method": "blacklist"
+        },
+        "McAfee": {
+          "category": "undetected",
+          "engine_name": "McAfee",
+          "result": null,
+          "method": "blacklist"
+        },
+        "ClamAV": {
+          "category": "undetected",
+          "engine_name": "ClamAV",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Malwarebytes": {
+          "category": "undetected",
+          "engine_name": "Malwarebytes",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Fortinet": {
+          "category": "undetected",
+          "engine_name": "Fortinet",
+          "result": null,
+          "method": "blacklist"
+        },
+        "DrWeb": {
+          "category": "undetected",
+          "engine_name": "DrWeb",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Cynet": {
+          "category": "undetected",
+          "engine_name": "Cynet",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Zillya": {
+          "category": "undetected",
+          "engine_name": "Zillya",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Rising": {
+          "category": "undetected",
+          "engine_name": "Rising",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Yandex": {
+          "category": "undetected",
+          "engine_name": "Yandex",
+          "result": null,
+          "method": "blacklist"
+        },
+        "VIPRE": {
+          "category": "undetected",
+          "engine_name": "VIPRE",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Tencent": {
+          "category": "undetected",
+          "engine_name": "Tencent",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Arcabit": {
+          "category": "undetected",
+          "engine_name": "Arcabit",
+          "result": null,
+          "method": "blacklist"
+        },
+        "ALYac": {
+          "category": "undetected",
+          "engine_name": "ALYac",
+          "result": null,
+          "method": "blacklist"
+        },
+        "K7AntiVirus": {
+          "category": "undetected",
+          "engine_name": "K7AntiVirus",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Lionic": {
+          "category": "undetected",
+          "engine_name": "Lionic",
+          "result": null,
+          "method": "blacklist"
+        },
+        "Xcitium": {
+          "category": "undetected",
+          "engine_name": "Xcitium",
+          "result": null,
+          "method": "blacklist"
+        },
+        "NANO-Antivirus": {
+          "category": "undetected",
+          "engine_name": "NANO-Antivirus",
+          "result": null,
+          "method": "blacklist"
+        }
+      },
+      "popular_threat_classification": {
+        "suggested_threat_label": "trojan.phexia/phebot",
+        "popular_threat_category": [
+          {
+            "count": 9,
+            "value": "trojan"
+          },
+          {
+            "count": 4,
+            "value": "pws"
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "count": 3,
+            "value": "phexia"
+          },
+          {
+            "count": 2,
+            "value": "phebot"
+          },
+          {
+            "count": 3,
+            "value": "agent"
+          }
+        ]
+      },
+      "crowdsourced_yara_results": [
+        {
+          "rule_name": "MAL_macOS_Phexia_Stealer_Backdoor",
+          "ruleset_name": "community_macos",
+          "source": "simulated"
+        }
+      ],
+      "sigma_analysis_results": [
+        {
+          "rule_title": "Osascript Password Prompt (display dialog hidden answer)",
+          "rule_level": "high"
+        }
+      ],
+      "sandbox_verdicts": {
+        "Zenbox macOS": {
+          "category": "malicious",
+          "malware_classification": [
+            "MALWARE",
+            "STEALER"
+          ],
+          "malware_names": [
+            "Phexia"
+          ],
+          "sandbox_name": "Zenbox macOS"
+        }
+      }
+    }
+  },
+  "relationships": {
+    "contacted_domains": [
+      {
+        "id": "nfs8u9aw.shop",
+        "type": "domain"
+      },
+      {
+        "id": "ad4rchr39w8f.fun",
+        "type": "domain"
+      },
+      {
+        "id": "t.me",
+        "type": "domain"
+      },
+      {
+        "id": "steamcommunity.com",
+        "type": "domain"
+      }
+    ],
+    "contacted_ips": [],
+    "contacted_urls": [
+      {
+        "id": "x",
+        "type": "url",
+        "context_attributes": {
+          "url": "https://t.me/phefuckxiabot"
+        }
+      },
+      {
+        "id": "y",
+        "type": "url",
+        "context_attributes": {
+          "url": "https://steamcommunity.com/id/phefuckxia"
+        }
+      }
+    ]
+  }
+}

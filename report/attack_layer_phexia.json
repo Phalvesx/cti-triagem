@@ -1,0 +1,556 @@
+{
+  "name": "Phexia — TTPs do relatório CTI",
+  "versions": {
+    "attack": "17",
+    "navigator": "5.1.0",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Técnicas ATT&CK mapeadas no relatório CTI-2026-0924-PHEXIA (hash de referência 7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e).",
+  "filters": {
+    "platforms": [
+      "Windows",
+      "macOS",
+      "Linux",
+      "Network",
+      "PRE",
+      "Containers",
+      "IaaS",
+      "SaaS",
+      "Office Suite",
+      "Identity Provider"
+    ]
+  },
+  "sorting": 3,
+  "layout": {
+    "layout": "side",
+    "aggregateFunction": "max",
+    "showID": true,
+    "showName": true,
+    "showAggregateScores": false,
+    "countUnscored": false,
+    "expandedSubtechniques": "annotated"
+  },
+  "hideDisabled": false,
+  "techniques": [
+    {
+      "techniqueID": "T1583.001",
+      "score": 1,
+      "color": "",
+      "comment": "Acquire Infrastructure: Domains",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "resource-development"
+    },
+    {
+      "techniqueID": "T1583.008",
+      "score": 1,
+      "color": "",
+      "comment": "Acquire Infrastructure: Malvertising",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "resource-development"
+    },
+    {
+      "techniqueID": "T1189",
+      "score": 1,
+      "color": "",
+      "comment": "Drive-by Compromise",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "initial-access"
+    },
+    {
+      "techniqueID": "T1204.004",
+      "score": 1,
+      "color": "",
+      "comment": "User Execution: Malicious Copy and Paste",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "execution"
+    },
+    {
+      "techniqueID": "T1204.002",
+      "score": 1,
+      "color": "",
+      "comment": "User Execution: Malicious File",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "execution"
+    },
+    {
+      "techniqueID": "T1059.002",
+      "score": 1,
+      "color": "",
+      "comment": "Command and Scripting Interpreter: AppleScript",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "execution"
+    },
+    {
+      "techniqueID": "T1059.004",
+      "score": 1,
+      "color": "",
+      "comment": "Command and Scripting Interpreter: Unix Shell",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "execution"
+    },
+    {
+      "techniqueID": "T1543.001",
+      "score": 1,
+      "color": "",
+      "comment": "Create or Modify System Process: Launch Agent",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "persistence"
+    },
+    {
+      "techniqueID": "T1553.001",
+      "score": 1,
+      "color": "",
+      "comment": "Subvert Trust Controls: Gatekeeper Bypass",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "defense-evasion"
+    },
+    {
+      "techniqueID": "T1027",
+      "score": 1,
+      "color": "",
+      "comment": "Obfuscated Files or Information",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "defense-evasion"
+    },
+    {
+      "techniqueID": "T1056.002",
+      "score": 1,
+      "color": "",
+      "comment": "Input Capture: GUI Input Capture",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "credential-access"
+    },
+    {
+      "techniqueID": "T1555.001",
+      "score": 1,
+      "color": "",
+      "comment": "Credentials from Password Stores: Keychain",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "credential-access"
+    },
+    {
+      "techniqueID": "T1555.003",
+      "score": 1,
+      "color": "",
+      "comment": "Credentials from Web Browsers",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "credential-access"
+    },
+    {
+      "techniqueID": "T1539",
+      "score": 1,
+      "color": "",
+      "comment": "Steal Web Session Cookie",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "credential-access"
+    },
+    {
+      "techniqueID": "T1082",
+      "score": 1,
+      "color": "",
+      "comment": "System Information Discovery",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "discovery"
+    },
+    {
+      "techniqueID": "T1518",
+      "score": 1,
+      "color": "",
+      "comment": "Software Discovery",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "discovery"
+    },
+    {
+      "techniqueID": "T1005",
+      "score": 1,
+      "color": "",
+      "comment": "Data from Local System",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "collection"
+    },
+    {
+      "techniqueID": "T1115",
+      "score": 1,
+      "color": "",
+      "comment": "Clipboard Data",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "collection"
+    },
+    {
+      "techniqueID": "T1560.001",
+      "score": 1,
+      "color": "",
+      "comment": "Archive Collected Data: Archive via Utility",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "collection"
+    },
+    {
+      "techniqueID": "T1102.001",
+      "score": 1,
+      "color": "",
+      "comment": "Web Service: Dead Drop Resolver",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "command-and-control"
+    },
+    {
+      "techniqueID": "T1071.001",
+      "score": 1,
+      "color": "",
+      "comment": "Application Layer Protocol: Web Protocols",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "command-and-control"
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 1,
+      "color": "",
+      "comment": "Ingress Tool Transfer",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "command-and-control"
+    },
+    {
+      "techniqueID": "T1041",
+      "score": 1,
+      "color": "",
+      "comment": "Exfiltration Over C2 Channel",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "exfiltration"
+    },
+    {
+      "techniqueID": "T1657",
+      "score": 1,
+      "color": "",
+      "comment": "Financial Theft",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "family",
+          "value": "Phexia"
+        },
+        {
+          "name": "sha256",
+          "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+        }
+      ],
+      "links": [],
+      "showSubtechniques": true,
+      "tactic": "impact"
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#fff7b3",
+      "#ffe600",
+      "#d92d20"
+    ],
+    "minValue": 0,
+    "maxValue": 1
+  },
+  "legendItems": [
+    {
+      "label": "Observado no artefato",
+      "color": "#ffe600"
+    },
+    {
+      "label": "Recorrente em vários scans",
+      "color": "#d92d20"
+    }
+  ],
+  "metadata": [
+    {
+      "name": "sha256",
+      "value": "7a8fc48ce4df4448b91a1e6b66410cca6993ac072cb12860b9cfa6438b25ed8e"
+    },
+    {
+      "name": "engine",
+      "value": "relatório CTI"
+    },
+    {
+      "name": "exported_at",
+      "value": "2026-09-25T02:26:57.652957+00:00"
+    }
+  ],
+  "links": [],
+  "showTacticRowBackground": true,
+  "tacticRowBackground": "#2D3277",
+  "selectTechniquesAcrossTactics": true,
+  "selectSubtechniquesWithParent": false,
+  "selectVisibleTechniques": false
+}
